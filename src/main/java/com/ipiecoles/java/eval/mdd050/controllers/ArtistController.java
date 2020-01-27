@@ -48,4 +48,10 @@ public class ArtistController {
         PageRequest pageRequest= PageRequest.of(page, size, Sort.Direction.fromString(sortDirection), sortProperty);
         return artistRepository.findAll(pageRequest);
     }
+
+    // Question 4 : Création d'un artiste
+    @PostMapping(value = "")
+    public ResponseEntity<Artist> createArtist(@RequestBody Artist newArtist) {
+        return ResponseEntity.ok(artistRepository.save(newArtist));
+    }
 }
