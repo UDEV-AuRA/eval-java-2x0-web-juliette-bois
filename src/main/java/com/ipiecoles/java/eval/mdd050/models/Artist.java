@@ -11,6 +11,9 @@ public class Artist implements Serializable {
     private Long id;
     private String name;
 
+    public Artist() {
+    }
+
     public Artist(String name) {
         this.name = name;
     }

@@ -13,6 +13,9 @@ public class Album implements Serializable {
     private String title;
     private Long artistId;
 
+    public Album() {
+    }
+
     public Album(String title, Long artistId) {
         this.title = title;
         this.artistId = artistId;
