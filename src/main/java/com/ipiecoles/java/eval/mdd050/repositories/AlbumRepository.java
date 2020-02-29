@@ -4,4 +4,5 @@ import com.ipiecoles.java.eval.mdd050.models.Album;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
+    Album findByTitle(String name);
 }

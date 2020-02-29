@@ -7,42 +7,46 @@ import java.io.Serializable;
 @Table(name = "Album")
 public class Album implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+    @Column(name = "title")
     private String title;
-    private Long artistId;
+
+    @ManyToOne
+    @JoinColumn(name = "artistId", nullable = false)
+    private Artist artist;
 
     public Album() {
     }
 
-    public Album(String title, Long artistId) {
+    public Album(String title, Artist artist) {
         this.title = title;
-        this.artistId = artistId;
+        this.artist = artist;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return title;
+    }
+
+    public Artist getArtist() {
+        return artist;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public Long getArtistId() {
-        return artistId;
-    }
-
-    public void setArtistId(Long artistId) {
-        this.artistId = artistId;
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 }
 

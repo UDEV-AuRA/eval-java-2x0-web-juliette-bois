@@ -8,15 +8,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@Validated
 public class ArtistService {
     public static final int PAGE_SIZE_MIN = 10;
     public static final int PAGE_SIZE_MAX = 100;
@@ -46,9 +49,9 @@ public class ArtistService {
         return artistRepository.save(artist);
     }
 
-    public void deleteArtist(Long idArtist) throws EntityNotFoundException {
+    public void deleteArtist(Long idArtist) throws ConflictException {
         if (!artistRepository.existsById(idArtist)) {
-            throw new EntityNotFoundException("L'artiste d'identifiant " + idArtist + " n'existe pas !");
+            throw new ConflictException("L'artiste d'identifiant " + idArtist + " n'existe pas !");
         }
 
         artistRepository.deleteById(idArtist);
@@ -61,16 +64,16 @@ public class ArtistService {
             @Max(value = PAGE_SIZE_MAX, message = PAGE_VALID_MESSAGE)
                     Integer size,
             String sortProperty,
-            Sort.Direction sortDirection
-    ) throws IllegalArgumentException {
+            String sortDirection
+    ) throws ConflictException {
         if (Arrays.stream(Artist.class.getDeclaredFields()).
                 map(Field::getName).
                 filter(s -> s.equals(sortProperty)).count() != 1) {
-            throw new IllegalArgumentException("La propriété " + sortProperty + " n'existe pas !");
+            throw new ConflictException("La propriété " + sortProperty + " n'existe pas !");
         }
         ;
 
-        Pageable pageable = PageRequest.of(page, size, sortDirection, sortProperty);
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDirection), sortProperty);
         Page<Artist> artists = artistRepository.findAll(pageable);
         if (page >= artists.getTotalPages()) {
             throw new IllegalArgumentException("Le numéro de page ne peut être supérieur à " + artists.getTotalPages());
@@ -80,19 +83,19 @@ public class ArtistService {
         return artists;
     }
 
-    public Artist findById(Long id) throws EntityNotFoundException {
+    public Artist findById(Long id) throws ConflictException {
         Optional<Artist> artist = artistRepository.findById(id);
         if (!artist.isPresent()) {
-            throw new EntityNotFoundException("L'artiste d'identifiant " + id + " n'a pas été trouvé.");
+            throw new ConflictException("L'artiste d'identifiant " + id + " n'a pas été trouvé.");
         }
         return artist.get();
     }
 
-    public Artist findByName(String name) throws EntityNotFoundException {
+    public List<Artist> findByName(String name) throws ConflictException {
         List<Artist> artist = this.artistRepository.findAllByName(name);
         if (artist == null) {
-            throw new EntityNotFoundException("L'artiste " + name + " n'a pas été trouvé.");
+            throw new ConflictException("L'artiste " + name + " n'a pas été trouvé.");
         }
-        return (Artist) artist;
+        return artist;
     }
 }
